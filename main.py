@@ -28,6 +28,15 @@ indx = user.find("v=")
 #print(indx+1)
 #Next lets take only that section
 parse_video_id = user[indx+2:]
-print(parse_video_id)
-#First lets get transcript
-#transcript = Y_API.YouTubeTranscriptApi()
+#print(parse_video_id)
+#lets get transcript
+'''
+try:
+    transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
+    print(transcript)
+except Y_API.youtube_transcript_api._errors.TranscriptsDisabled:
+    print("Subtitles Disabled. Try another URL")
+'''
+
+transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
+print(transcript)
