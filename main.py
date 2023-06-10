@@ -11,8 +11,8 @@
 #For the youtube-transcript-api
 #pip install youtube-transcript-api
 import nltk
+import string
 import youtube_transcript_api as Y_API
-
 ## we will implment a GUI once we have the logic in place. Never use TKINTER again, use eel.
 
 
@@ -37,6 +37,57 @@ try:
 except Y_API.youtube_transcript_api._errors.TranscriptsDisabled:
     print("Subtitles Disabled. Try another URL")
 '''
-
+transcript = []
 transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
-print(transcript)
+#print(transcript)
+
+#download stopwords
+#Check to see if resource is already installed
+#nltk.download("stopwords")
+
+
+#Data returned is a list
+#Also want to remove any unimportant words to make life easier
+stop_w = nltk.corpus.stopwords.words('english') #Gte stop words
+#print(f"\n{stop_w}")
+#next get puncturations out
+punc = string.punctuation
+#print(punc)
+
+'''remeber that this gets transcript, so by defualt, we will have some
+numbers, well lets remove those numbers'''
+
+#Create new list
+cleanUp = []
+
+for i in range(len(transcript)):
+    cleanUp.append(transcript[i].get("text"))
+
+#print("First step\n",cleanUp, "\n\n")
+
+'''next lets delete some words in the list and  it will create a new
+list for use'''
+print(cleanUp,"\n\n")
+cleanUpData = []
+for i in cleanUp:
+    local_store = i.split(" ")
+    for j in local_store:
+        if(j in stop_w or j in punc or j.upper() in stop_w or j.lower() in stop_w): #remeber to check for lower and uppercase just to be sure
+            #cleanUp.remove(j)
+            #print("Remove:",j)
+            #cleanUpData.append(j)
+            pass
+            #local_store.remove(j)
+        #removed.append()
+            #cleanUp.remove(j)
+        else:
+            cleanUpData.append(j)
+
+print(cleanUpData)
+#Next lets create a word frequency list according to the general concept
+frequency = {}
+for word in cleanUpData:
+    for count in range(len(cleanUpData)):
+        if(word == cleanUpData[count]):
+            #update 
+            pass
