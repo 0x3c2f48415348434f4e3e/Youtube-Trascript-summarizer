@@ -1,22 +1,12 @@
 #!C:\Users\benja\AppData\Local\Programs\Python\Python310\python.exe
 
-#Goal - simple a youtube transcript sumarizer
-
-#Tools - Use a Natural language processing to allow computer to understand trasncript, and the youtube-transcript-api to get trnscript
-
-#install and import tools needed - command
-#FOR NLTK (Natural langauge tool kit)
-#pip install nltk
-
-#For the youtube-transcript-api
-#pip install youtube-transcript-api
 import nltk
 import string
+import heapq
 import youtube_transcript_api as Y_API
-## we will implment a GUI once we have the logic in place. Never use TKINTER again, use eel.
+import tkinter #Will use to display final output
 
-
-#allow user to Enter URL
+#URL must be valid
 user = input("Enter youtube URL: ")
 
 #Next lets cut out the important part fromthe URL, which is the v part:
@@ -25,18 +15,10 @@ user = input("Enter youtube URL: ")
 #The important part for us is the list of characters after the 'v='
 #First find the index
 indx = user.find("v=")
-#print(indx+1)
 #Next lets take only that section
 parse_video_id = user[indx+2:]
-#print(parse_video_id)
 #lets get transcript
-'''
-try:
-    transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
-    print(transcript)
-except Y_API.youtube_transcript_api._errors.TranscriptsDisabled:
-    print("Subtitles Disabled. Try another URL")
-'''
+
 transcript = []
 transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
 #print(transcript)
@@ -64,7 +46,6 @@ for i in range(len(transcript)):
     cleanUp.append(transcript[i].get("text"))
 
 #print("First step\n",cleanUp, "\n\n")
-
 '''next lets delete some words in the list and  it will create a new
 list for use'''
 print(cleanUp,"\n\n")
@@ -73,21 +54,70 @@ for i in cleanUp:
     local_store = i.split(" ")
     for j in local_store:
         if(j in stop_w or j in punc or j.upper() in stop_w or j.lower() in stop_w): #remeber to check for lower and uppercase just to be sure
-            #cleanUp.remove(j)
-            #print("Remove:",j)
-            #cleanUpData.append(j)
             pass
-            #local_store.remove(j)
-        #removed.append()
-            #cleanUp.remove(j)
         else:
             cleanUpData.append(j)
 
-print(cleanUpData)
+#print(cleanUpData)
 #Next lets create a word frequency list according to the general concept
 frequency = {}
 for word in cleanUpData:
+    count = 0 #set coutner
     for count in range(len(cleanUpData)):
         if(word == cleanUpData[count]):
             #update 
-            pass
+            #update counter
+            count+=1
+            frequency.update({word:count})
+print("\n")
+#print(frequency)
+
+#Next lets get the maximum within our frequency object
+def _max(obj): #lets pass in our object
+    return max(obj.values())
+
+maxStore = _max(frequency)
+
+#division
+div = {}
+#update object
+for i,j in frequency.items():
+    j/=maxStore
+    div.update({i:j})
+
+#print(div)
+
+
+#Tokenize into sentences
+sen = nltk.sent_tokenize(str(cleanUp))
+
+#set up an empty dictorinary
+#Lets use the dict constructor
+scores = {}
+#Lets find the weighted frequencies
+#print("Test\n",sen)
+
+for n in cleanUp: #remove sen and test cleanup
+    sen_wordCount = len(nltk.word_tokenize(n))
+    sen_wordcount_without_stopwords = 0
+    for weight in div:
+        if(weight in n.lower()):
+            sen_wordcount_without_stopwords +=1
+            if(n in scores):
+                scores[n] += div[weight]
+            else:
+                scores[n] = div[weight]
+    #scores[n] = scores[n]
+
+print(scores)
+
+#summary
+length = float(len(scores)*0.3)
+print(length)
+
+summary = heapq.nlargest(int(length),scores, key=scores.get)
+res = ''
+for word in summary:
+    res+= (f" {word}")
+summary = ''.join(res)
+print("Final summary:", summary)
