@@ -6,23 +6,26 @@ import heapq
 import youtube_transcript_api as Y_API
 import tkinter #Will use to display final output
 
-#URL must be valid
-user = input("Enter youtube URL: ")
+#detect exceptoion error such as transcript unavaibale within a youtube
+try:
+    #URL must be valid
+    user = input("Enter youtube URL: ")
 
-#Next lets cut out the important part fromthe URL, which is the v part:
+    #Next lets cut out the important part fromthe URL, which is the v part:
 
-#So a typical youtube URL look slike - https://www.youtube.com/watch?v=liJVSwOiiwg
-#The important part for us is the list of characters after the 'v='
-#First find the index
-indx = user.find("v=")
-#Next lets take only that section
-parse_video_id = user[indx+2:]
+    #So a typical youtube URL look slike - https://www.youtube.com/watch?v=liJVSwOiiwg
+    #The important part for us is the list of characters after the 'v='
+    #First find the index
+    indx = user.find("v=")
+    #Next lets take only that section
+    parse_video_id = user[indx+2:]
 #lets get transcript
 
-transcript = []
-transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
+    transcript = []
+    transcript = Y_API.YouTubeTranscriptApi.get_transcript(parse_video_id)
 #print(transcript)
-
+except:
+    print("Error!!! No transcript enabled")
 #download stopwords
 #Check to see if resource is already installed
 #nltk.download("stopwords")
